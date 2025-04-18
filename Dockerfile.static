@@ -14,7 +14,7 @@ RUN pnpm install --frozen-lockfile
 # Copy the rest of the application code
 COPY . .
 
-# Build the static site
+# Build the application
 RUN pnpm run build
 
 # Stage 2: Serve the static files with Nginx
@@ -24,8 +24,8 @@ WORKDIR /usr/share/nginx/html
 # Remove default Nginx welcome page
 RUN rm -rf ./*
 
-# Copy built assets from the builder stage
-COPY --from=builder /app/dist .
+# Copy built client assets from the builder stage
+COPY --from=builder /app/dist/client .
 
 # Expose port 80
 EXPOSE 80
