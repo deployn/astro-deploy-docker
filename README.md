@@ -1,47 +1,37 @@
-# Astro Starter Kit: Minimal
+# Astro Deploy Docker
 
-```sh
-pnpm create astro@latest -- --template minimal
-```
+# ... (existing content) ...
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+## 🐳 Docker Support
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+This project includes Dockerfiles for containerization.
 
-## 🚀 Project Structure
+### Static Site (SSG - default)
 
-Inside of your Astro project, you'll see the following folders and files:
+1.  **Build the image:**
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+    ```sh
+    docker build -t my-astro-static-app -f Dockerfile.static .
+    ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+2.  **Run the container:**
+    ```sh
+    docker run -p 8080:80 my-astro-static-app
+    ```
+    Access the site at `http://localhost:8080`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+### Server-Side Rendering (SSR - requires Node adapter)
 
-Any static assets, like images, can be placed in the `public/` directory.
+Ensure you have configured Astro for SSR with the Node adapter first (`pnpm astro add node`).
 
-## 🧞 Commands
+1. **Build the image:**
 
-All commands are run from the root of the project, from a terminal:
+   ```sh
+   docker build -t my-astro-ssr-app -f Dockerfile.ssr .
+   ```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+2. **Run the container:**
+   ```sh
+   docker run -p 4321:4321 my-astro-ssr-app
+   ```
+   Access the site at `http://localhost:4321`.

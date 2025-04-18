@@ -1,0 +1,54 @@
+# Stage 1: Base Node image
+FROM node:lts-alpine AS base
+WORKDIR /app
+
+# Stage 2: Install production dependencies
+FROM base AS prod-deps
+# Install pnpm
+RUN npm install -g pnpm
+# Copy dependency definition files
+COPY package.json pnpm-lock.yaml* ./
+# Install only production dependencies
+RUN pnpm install --prod --frozen-lockfile
+
+# Stage 3: Install all dependencies for building
+FROM base AS build-deps
+# Install pnpm
+RUN npm install -g pnpm
+# Copy dependency definition files
+COPY package.json pnpm-lock.yaml* ./
+# Install all dependencies
+RUN pnpm install --frozen-lockfile
+
+# Stage 4: Build the application
+FROM base AS builder
+WORKDIR /app
+# Copy source code
+COPY . .
+# Copy installed dependencies from build-deps stage
+COPY --from=build-deps /app/node_modules ./node_modules
+# Install pnpm (needed again if RUN commands clear global installs)
+RUN npm install -g pnpm
+# Build the application
+RUN pnpm run build
+
+# Stage 5: Production image
+FROM base as runner
+WORKDIR /app
+# Copy production dependencies from prod-deps stage
+COPY --from=prod-deps /app/node_modules ./node_modules
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+# Copy package.json (needed for start script)
+COPY package.json .
+
+# Set HOST and PORT environment variables
+# HOST=0.0.0.0 allows the server to be accessible externally
+ENV HOST=0.0.0.0
+ENV PORT=4321
+
+# Expose the port the app runs on
+EXPOSE 4321
+
+# Run the application using the start script
+CMD ["pnpm", "start"]
