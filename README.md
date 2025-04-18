@@ -1,7 +1,5 @@
 # Astro Deploy Docker
 
-# ... (existing content) ...
-
 ## 🐳 Docker Support
 
 This project includes Dockerfiles for containerization.
